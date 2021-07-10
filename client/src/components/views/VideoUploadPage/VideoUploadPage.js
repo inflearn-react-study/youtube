@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import axios from 'axios';
 import Title from "antd/es/typography/Title";
 import {Button, Form, Input} from "antd";
 import TextArea from "antd/es/input/TextArea";
@@ -42,6 +43,22 @@ function VideoUploadPage(props) {
         setCategory(e.currentTarget.value);
     }
 
+    const onDrop = (files) => {
+        let formData = new FormData();
+        const config = {
+            header: {'content-type': 'multipart/form-data'}
+        }
+        formData.append("file", files[0]);
+        axios.post('/api/video/uploadFiles', formData, config)
+            .then(res => {
+                if(res.data.success) {
+                    console.log(res.fileName);
+                } else {
+                    alert('비디오 업로드를 실패했습니다.')
+                }
+            });
+    }
+
     return (
         <div style={{maxWidth: '700px', margin: '2rem auto'}}>
             <div style={{textAlign: 'center', marginBottom: '2rem'}}>
@@ -51,8 +68,8 @@ function VideoUploadPage(props) {
                 <div style={{display: 'flex', justifyContent: 'space-between'}}>
                     {/*Drop zone*/}
                     <Dropzone
-                        onDrop
-                        multiple
+                        onDrop={onDrop}
+                        multiple={false}
                         maxSize>
                         {({getRootProps, getInputProps}) => (
                             <div style={{
@@ -67,7 +84,7 @@ function VideoUploadPage(props) {
                     </Dropzone>
                     {/* Thumbnail   */}
                     <div>
-                        <img src alt/>
+                        {/*<img src alt/>*/}
                     </div>
                 </div>
                 <br/>
