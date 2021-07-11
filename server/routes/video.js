@@ -59,7 +59,7 @@ router.post('/thumbnail', (req, res) => {
 
     // 썸네일 생성
     ffmpeg(req.body.url)
-        .on('filenames', function(fileNames) {
+        .on('filenames', function (fileNames) {
             console.log("=================");
             console.log(`Will generate ${fileNames.join(', ')}`);
             console.log(fileNames);
@@ -67,7 +67,7 @@ router.post('/thumbnail', (req, res) => {
             filePath = `uploads/thumbnails/${fileNames[0]}`
             console.log('===========>', filePath);
         })
-        .on('end', function() {
+        .on('end', function () {
             console.log("ScreenShots taken");
             return res.json({
                 success: true,
@@ -76,7 +76,7 @@ router.post('/thumbnail', (req, res) => {
                 fileDuration: fileDuration
             })
         })
-        .on('error', function(err) {
+        .on('error', function (err) {
             console.error(err);
             return res.json({success: false, err});
         })
@@ -91,11 +91,24 @@ router.post('/thumbnail', (req, res) => {
 router.post('/uploadVideo', (req, res) => {
     const video = new Video(req.body)
     video.save((err, doc) => {
-        if(err) {
+        if (err) {
             return res.json({success: false, err})
         }
         res.status(200).json({success: true});
     })
+})
+
+
+router.get('/getVideos', (req, res) => {
+    // 비디오를 DB 에서 가져와서 클라이언트에 보낸다.
+    Video.find()
+        .populate('writer')
+        .exec((err, videos) => {
+            if (err) {
+                return res.status(400).send(err)
+            }
+            res.status(200).json({success: true, videos})
+        });
 })
 
 
